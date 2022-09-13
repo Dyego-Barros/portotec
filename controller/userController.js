@@ -6,6 +6,7 @@ const User = require('../models/user')(sequelize, DataTypes);
 const Enterprise = require('../models/enterprise')(sequelize, DataTypes);
 const jwt= require('jsonwebtoken');
 const models = require('../models');
+const { json } = require('body-parser');
 
 
 
@@ -18,9 +19,9 @@ const JWTSecret="123456789abcd";
 module.exports={
 //ROTA DE LISTA COMPLETA  DE USUARIO
     list_all:  async (req,res)=>{
-        const user = await sequelize.query('SELECT * FROM public."Users"  JOIN  public."Enterprises" ON identerprise = id_enterprise',{type: QueryTypes.SELECT});
+        const user = await sequelize.query('SELECT * FROM public."Users" INNER  JOIN  public."Enterprises" ON identerprise=id_enterprise',{type: QueryTypes.SELECT});
        
-        if (user != ''){
+        if (user != undefined){
             
            
             res.json(user);
@@ -50,23 +51,18 @@ module.exports={
        
     },
     //ROTA DE CRIAÇÂO DE USUARIO
-    create: async(req, res)=>{
-        var name = req.body;
-        const user = {name, cpf, email, phone, password, level, identerprise}= req.body
-        if(user != ''|| user!= undefined|| user!= null){ 
-            var consult = await Enterprise.findByPk(identerprise);
-            if(consult != undefined){
+    create: async(req, res)=>{ 
+        let name = req.body.name      
+        const user = {name, cpf, email_user, phone, password, level, identerprise}= req.body
+        if(user!= undefined|| user!= null){ 
                 try{
-                    await User.create(user);
+                    await sequelize.query(`INSERT INTO public."Users" (name, cpf, email_user, phone, password, level, identerprise) VALUES('${user.name}', '${user.cpf}', '${user.email_user}','${user.phone}','${user.password}','${user.level}',${user.identerprise})`,{type:QueryTypes.INSERT});
                     res.sendStatus(201);
                 }catch(error){
                     if(error.name ===  'SequelizeUniqueConstraintError' ){
                         res.sendStatus(400);
                     }
                 } 
-            }else{
-                res.sendStatus(400);
-            }
         }else{
             res.sendStatus(400);
         }
@@ -99,47 +95,44 @@ module.exports={
 
         }else{
             var id = parseInt(req.params.id);
-            const user = await User.findByPk(id);
+            const user = await sequelize.query(`SELECT * FROM public."Users" WHERE id_user= ${id}`,{type:QueryTypes.SELECT});
             if(user!=undefined){
                 var name = req.body;
-                const update_user = {name, cpf,email,phone, password, level,identerprise} = req.body;
-                 if(update_user.name!=''){
-                    user.name = update_user.name;
+                const update = {name, cpf,email_user,phone, password, level,identerprise} = req.body;
+                 if(update.name !=''){
+                    user.name= name;
                  }
-                 if(update_user.cpf!=''){
-                    user.cpf = update_user.cpf;
+                 if(update.cpf !=''){
+                  user.cpf = cpf;
                  }
-                 if(update_user.email!=''){
-                    user.email = update_user.email;
+                 if(update.email_user !=''){
+                   user.email_user =email_user;
                  }
-                 if(update_user.phone!=''){
-                    user.phone = update_user.phone;
+                 if(update.phone !=''){
+                   user.phone = phone;
                  }
-                 if(update_user.password!=''){
-                    user.password = update_user.password;
+                 if(update.password !=''){
+                   user.password = password;
                  }
-                 if(update_user.level!=''){
-                    user.level = update_user.level;
+                 if(update.level !=''){
+                   user.level = level;
                  }
-                 if(update_user.identerprise!=''){
-                    user.identerprise = update_user.identerprise;
+                 if(update.identerprise !=''){
+                    user.identerprise = identerprise;
                  }
-                 console.log(update_user)
-                 
                
-                 if(update_user != undefined){
+                console.log(update)
+               
+                 
                      try {
-                        await User.update(update_user,{where:{id_user:id}});
+                        await User.update(update,{where:{id_user: id}});
                         res.sendStatus(201);
                      } catch (error) {
                         if(error.name ===  'SequelizeUniqueConstraintError' ){
                             res.sendStatus(400);
                         }
                      }
-                 }else{
-                    res.sendStatus(400);
-
-                 }
+               
                
             }else{
                 res.sendStatus(400);
@@ -154,10 +147,11 @@ module.exports={
 
         }else{
             var id = parseInt(req.params.id);
-            let consult = await User.findByPk(id);
+            let consult = await sequelize.query(`SELECT * FROM public."Users" WHERE id_user=${id}`,{type:QueryTypes.SELECT});
             if(consult != undefined || consult != null){
                 try {
-                 await User.destroy({where:{id_user:id}});
+                 await sequelize.query(`DELETE FROM public."Address_Users"WHERE iduser=${id}`,{type:QueryTypes.DELETE})
+                 await sequelize.query(`DELETE FROM public."Users" WHERE id_user=${id}`,{type:QueryTypes.DELETE});
                     res.sendStatus(200);
                 } catch (error) {
                     res.sendStatus(400);
@@ -172,18 +166,21 @@ module.exports={
 //ROTA DE LOGIN DE USUARIO E AUTORIZAÇÂO DO TOKEN
     get_user:async(req,res)=>{
 
-        let email = req.body.email;
+        let email = req.body.email_user;
         let password = req.body.password;
           try{
             if(email !=null && password !=null || email !=undefined && password !=undefined){
-                const login = await User.findAll({where:{email:email, password:password}});
-                if(login !=''){
-
-                    jwt.sign({id: login.id_user, email: login.email}, JWTSecret,{expiresIn:'8h'}, (error, token)=>{
+                const login = await sequelize.query(`SELECT * FROM public."Users" WHERE email_user='${email}' AND password='${password}'`,{type:QueryTypes.SELECT});
+                if(login !=undefined || login != null){
+                  
+                    jwt.sign({id: login.id_user, email: login.email_user}, JWTSecret,{expiresIn:'8h'}, (error, token)=>{
                         if(error){                           
                             res.json({error: "Credenciais invalidas"})
                         }else{                           
-                            res.json({token: token, user:login}); }
+                            res.json({token: token, login:login});
+                           
+
+                         }
                     });
                    
                 }else{

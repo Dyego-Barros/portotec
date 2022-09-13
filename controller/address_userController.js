@@ -1,5 +1,5 @@
 const {sequelize} = require('../models/index');
-const {DataTypes} = require('sequelize');
+const {DataTypes, QueryTypes} = require('sequelize');
 const Address_User = require('../models/address_user')(sequelize, DataTypes);
 
 module.exports={
@@ -7,7 +7,7 @@ module.exports={
         const address_user = {address, number, district, city,state,complement,iduser}=req.body;
 
         if (address!=undefined || address!= null) {
-            await  Address_User.create( address_user);
+            await  sequelize.query(`INSERT INTO public."Address_Users" (address, number,district,city,state,complement,iduser) VALUES('${address_user.address}','${address_user.number}','${address_user.district}','${address_user.city}','${address_user.state}','${address_user.complement}',${address_user.iduser})`,{type:QueryTypes.INSERT});
             res.sendStatus(201);
             
         } else {
@@ -17,7 +17,7 @@ module.exports={
     },
 
     list_address: async(req,res)=>{         
-        const list = await  Address_User.findAll();
+        const list = await  sequelize.query('SELECT * FROM public."Address_Users" ORDER BY id DESC', {type:QueryTypes.SELECT});
         if (list!= undefined|| list!=null) {
             res.json(list);            
         } else {
@@ -31,7 +31,7 @@ module.exports={
             res.sendStatus(400);            
         } else {
             var id = parseInt(req.params.id);
-            const search_address = await  Address_User.findByPk(id);
+            const search_address = await  sequelize.query(`SELECT * FROM public."Address_Users" WHERE id=${id}`, {type:QueryTypes.SELECT});
             if(search_address!= undefined){
                 res.json(search_address);
             }else{
@@ -46,9 +46,12 @@ module.exports={
             res.sendStatus(400);            
         }else{
             var id = parseInt(req.params.id);
-            const update_adrres = {address, number, district, city,state,complement,iduser}=req.body;
-            const search_address = await  Address_User.findByPk(id);
+          
+            const search_address = await sequelize.query(`SELECT * FROM public."Address_Users" WHERE id=${id}`,{type:QueryTypes.SELECT});
             if (search_address!= undefined|| search_address!=null){
+
+                const update_adrres = {address, number, district, city,state,complement,iduser}=req.body;
+
                 if(update_adrres.address!=''){
                     search_address.address = address;
                 }
@@ -99,7 +102,7 @@ module.exports={
             const search_address= await  Address_User.findByPk(id);
             if (search_address!= undefined|| search_address!=null){
                 try {
-                    await  Address_User.destroy({where:{id:id}});
+                    await  sequelize.query(`DELETE FROM public."Address_Users" WHERE id=${id}`);
                     res.sendStatus(200);                    
                 } catch (error) {
                     res.sendStatus(400);

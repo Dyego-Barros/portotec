@@ -15,7 +15,7 @@ module.exports = function(sequelize, DataTypes) {
   
     cpf: DataTypes.STRING,
   
-    email: DataTypes.STRING,
+    email_user: DataTypes.STRING,
   
     phone: DataTypes.STRING,
   

@@ -21,7 +21,7 @@ module.exports ={
 
         if( enterprise2!= null || enterprise2!=undefined || enterprise2!=''){
             try{
-                await Enterprise.create(enterprise2);
+                await sequelize.query(`INSERT INTO public."Enterprises" (cnpj,name_fantasy,social_reason,phone,email) VALUES('${enterprise2.cnpj}','${enterprise2.name_fantasy}','${enterprise2.social_reason}','${enterprise2.phone}','${enterprise2.email}')`, {type:QueryTypes.INSERT});
                 res.sendStatus(201);
 
             }catch(error){
@@ -37,7 +37,7 @@ module.exports ={
     },
 
     list_all: async(req,res) =>{
-       var teste2 = await Enterprise.findAll();
+       var teste2 = await sequelize.query(`SELECT * FROM public."Enterprises" ORDER BY id_enterprise DESC`,{type:QueryTypes.SELECT});
        if(teste2 != ''|| teste2!=null|| teste2!=undefined){        
         res.json(teste2);
 
@@ -75,10 +75,13 @@ module.exports ={
             res.sendStatus(400);
         }else{
             var id = parseInt(req.params.id);
-            var dele_enterprise =  await Enterprise.findByPk(id);
+            var dele_enterprise =  await sequelize.query(`SELECT * FROM public."Enterprises"  WHERE id_enterprise=${id}`,{type:QueryTypes.SELECT});
             if( dele_enterprise!= undefined || dele_enterprise!=null ){
                 try {
-                    await Enterprise.destroy({where:{id_enterprise: id}});
+                    await sequelize.query(`DELETE FROM public."Address_Enterprises" WHERE identerprise=${id}`,{type:QueryTypes.DELETE});
+                    await sequelize.query(`DELETE FROM public."Users" WHERE identerprise=${id}`,{type:QueryTypes.DELETE});
+                    await sequelize.query(`DELETE FROM public."Clients" WHERE identerprise=${id}`,{type:QueryTypes.DELETE});
+                    await sequelize.query(`DELETE FROM public."Enterprises" WHERE id_enterprise=${id}`,{type:QueryTypes.DELETE});
                     res.sendStatus(200);
                 } catch (error) {
                     res.sendStatus(400);
@@ -97,7 +100,7 @@ module.exports ={
         else{
             var id = parseInt(req.params.id)
            
-            var update_enterprise = await Enterprise.findByPk(id);
+            var update_enterprise = await sequelize.query(`SELECT * FROM public."Enterprises" WHERE id_enterprise=${id}`,{type:QueryTypes.SELECT});
 
             if(update_enterprise != undefined){
                 const date = new Date().getUTCDate();      
@@ -118,7 +121,7 @@ module.exports ={
                 if(update.email!= ''){
                     update_enterprise.email = email;
                 }
-                console.log(update_enterprise);
+                
 
                 await Enterprise.update(update,{where:{id_enterprise: id}});
                 res.sendStatus(201);
@@ -135,52 +138,60 @@ module.exports ={
         }else{
             var id = parseInt(req.params.id);          
             var nome = req.file.filename;
-            var workbook = XLSX.readFile('./uploads/'+ nome);
-            var shhet_name_list = workbook.SheetNames[0];
-            let workshhet = workbook.Sheets[shhet_name_list]
-            const data = XLSX.utils.sheet_to_json(workshhet);
-            if(data!= null|| data!=undefined){
-                for(i=0; i< data.length; i++){
-                   var  newData={ 
-                        cpf:data[i].CPF,
-                        nome:data[i].NOME,
-                        tipo:data[i].TIPO,
-                        posto:data[i].POSTO,
-                        sub_om:data[i].SUB_OM,
-                        ordem:data[i].ORDEM,
-                        upag:data[i].UPAG,
-                        valor:data[i].VALOR,
-                        prazo:data[i].PRAZO,                         
-                        banco:data[i].BANCO,
-                        data_nascimento:data[i].DATA_NASCIMENTO,
-                        endereco:data[i].ENDERECO,
-                        numero:data[i].NUMERO,
-                        complemento:data[i].COMPLEMENTO,
-                        bairro:data[i].BAIRRO,
-                        cidade:data[i].CIDADE,
-                        uf:data[i].UF,
-                        cep:data[i].CEP,
-                        fixo1: data[i].FIXO1_TEL,
-                        fixo2: data[i].FIXO2_TEL,
-                        fixo3:data[i].FIXO3_TEL,
-                        cel1: data[i].CEL1_TEL,
-                        cel2:data[i].CEL2_TEL,
-                        cel3:data[i].CEL3_TEL,
-                        identerprise:id   
-                    }                   
-                    try {
-                         await Client.create(newData).then(()=>{
-                            return res.sendStatus(201);
-                        });                      
-                    } catch (error) {
-                        if(error.name ===  'SequelizeUniqueConstraintError' ){
-                            return res.sendStatus(400);
-                        }
-                    }                   
-                }
-            }else{
+            if(nome == undefined){
+                console.log(nome)
                 res.sendStatus(400);
+
+            }else{
+                var workbook = XLSX.readFile('./uploads/'+ nome);
+                var shhet_name_list = workbook.SheetNames[0];
+                let workshhet = workbook.Sheets[shhet_name_list]
+                const data = XLSX.utils.sheet_to_json(workshhet);
+                if(data!= null|| data!=undefined){
+                    for(i=0; i< data.length; i++){
+                       var  newData={ 
+                            cpf:data[i].CPF,
+                            nome:data[i].NOME,
+                            tipo:data[i].TIPO,
+                            posto:data[i].POSTO,
+                            sub_om:data[i].SUB_OM,
+                            ordem:data[i].ORDEM,
+                            upag:data[i].UPAG,
+                            valor:data[i].VALOR,
+                            prazo:data[i].PRAZO,                         
+                            banco:data[i].BANCO,
+                            data_nascimento:data[i].DATA_NASCIMENTO,
+                            endereco:data[i].ENDERECO,
+                            numero:data[i].NUMERO,
+                            complemento:data[i].COMPLEMENTO,
+                            bairro:data[i].BAIRRO,
+                            cidade:data[i].CIDADE,
+                            uf:data[i].UF,
+                            cep:data[i].CEP,
+                            fixo1: data[i].FIXO1_TEL,
+                            fixo2: data[i].FIXO2_TEL,
+                            fixo3:data[i].FIXO3_TEL,
+                            cel1: data[i].CEL1_TEL,
+                            cel2:data[i].CEL2_TEL,
+                            cel3:data[i].CEL3_TEL,
+                            identerprise:id   
+                        }                   
+                        try {
+                             await Client.create(newData).then(()=>{
+                                 res.sendStatus(201);
+                            });                      
+                        } catch (error) {
+                            if(error.name ===  'SequelizeUniqueConstraintError' ){
+                                return res.sendStatus(400);
+                            }
+                        }                   
+                    }
+                }else{
+                    res.sendStatus(400);
+                }
+
             }
+           
         }
        }
 
