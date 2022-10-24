@@ -4,9 +4,7 @@ const Enterprise = require('../models/enterprise')(sequelize, DataTypes);
 const Client = require('../models/client')(sequelize, DataTypes);
 const XLSX = require('xlsx');
 const fs = require('fs');
-const JWTSecret="123456789abcd";
 
-const jwt= require('jsonwebtoken');
 
 
 //END-POINTS DE EMPRESAS
@@ -17,7 +15,7 @@ module.exports ={
         let createdAt =date;
         let updatedAt =date;
         const enterprise = {cnpj, name_fantasy, social_reason, phone, email} = req.body;
-        const enterprise2 ={cnpj, name_fantasy, social_reason, phone, email, createdAt, updatedAt}
+        const enterprise2 ={cnpj, name_fantasy, social_reason, phone, email, sip, createdAt, updatedAt}
 
         if( enterprise2!= null || enterprise2!=undefined || enterprise2!=''){
             try{
@@ -105,7 +103,7 @@ module.exports ={
             if(update_enterprise != undefined){
                 const date = new Date().getUTCDate();      
                 let updatedAt =date;
-                const update =  {cnpj, name_fantasy, social_reason, phone, email,updatedAt} = req.body;
+                const update =  {cnpj, name_fantasy, social_reason, phone, email,sip,updatedAt} = req.body;
                 if(update.cnpj!= ''){
                     update_enterprise.cnpj = cnpj;
                 }
@@ -139,14 +137,15 @@ module.exports ={
             var id = parseInt(req.params.id);          
             var nome = req.file.filename;
             if(nome == undefined){
-                console.log(nome)
+                //console.log(nome)
                 res.sendStatus(400);
 
             }else{
                 var workbook = XLSX.readFile('./uploads/'+ nome);
                 var shhet_name_list = workbook.SheetNames[0];
                 let workshhet = workbook.Sheets[shhet_name_list]
-                const data = XLSX.utils.sheet_to_json(workshhet);
+                const data = XLSX.utils.sheet_to_json(workshhet,{raw:false});
+               
                 if(data!= null|| data!=undefined){
                     for(i=0; i< data.length; i++){
                        var  newData={ 
@@ -160,7 +159,7 @@ module.exports ={
                             valor:data[i].VALOR,
                             prazo:data[i].PRAZO,                         
                             banco:data[i].BANCO,
-                            data_nascimento:data[i].DATA_NASCIMENTO,
+                            data_nascimento: data[i].DATA_NASCIMENTO,
                             endereco:data[i].ENDERECO,
                             numero:data[i].NUMERO,
                             complemento:data[i].COMPLEMENTO,
@@ -175,7 +174,10 @@ module.exports ={
                             cel2:data[i].CEL2_TEL,
                             cel3:data[i].CEL3_TEL,
                             identerprise:id   
-                        }                   
+                        }       
+                        
+                        //console.log(newData)
+                      
                         try {
                              await Client.create(newData).then(()=>{
                                  res.sendStatus(201);

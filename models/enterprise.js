@@ -19,6 +19,8 @@ module.exports= function(sequelize,DataTypes){
     phone: DataTypes.STRING,
   
     email: DataTypes.STRING,
+    
+    sip: DataTypes.STRING
   
    });  
      

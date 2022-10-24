@@ -24,6 +24,8 @@ const userRouter = require('./router/userRouter');
 const address_enterpriseRouter = require('./router/address_enterpriseRouter');
 const address_userRouter = require('./router/address_userRouter');
 const clientRouter = require('./router/clientRouter');
+const inssRouter = require('./router/inssRouter');
+
 
 
 app.use('/enterprise', enterpriseRouter);
@@ -31,6 +33,7 @@ app.use('/user', userRouter);
 app.use('/address_enterprise', address_enterpriseRouter);
 app.use('/address_user', address_userRouter);
 app.use('/clients', clientRouter);
+app.use('/inss', inssRouter);
 app.use('/', defaultRouter);
 
 

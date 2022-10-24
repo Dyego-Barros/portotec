@@ -1,7 +1,4 @@
 
-const DataTypes= require('sequelize');
-const enterprise = require('./enterprise');
-
 module.exports= function(sequelize, DataTypes) {
   const Address_Enterprise= sequelize.define('Address_Enterprise',{
     address: DataTypes.STRING,

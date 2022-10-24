@@ -38,8 +38,9 @@ module.exports={
 
         }else{
             let id = parseInt(req.params.id);
-            const clientList_id = await Client.findByPk(id);
-            if(clientList_id !=undefined){
+            const clientList_id = await sequelize.query(`SELECT * FROM public."Clients" WHERE id=${id}`,{type:QueryTypes.SELECT});
+ 
+            if(clientList_id !== undefined){
                 res.json(clientList_id);
             }else{
                 res.sendStatus(400)
@@ -55,14 +56,25 @@ module.exports={
 
          }else{           
             let id = parseInt(req.params.id);
-            const client = await Client.findByPk(id);
-            if(client!=undefined || client != null){
+            const client = await sequelize.query(`SELECT * FROM public."Clients" WHERE id=${id}`, {type:QueryTypes.SELECT});
+           
+            if(client.length >0){
                 const clientUpdate = {cpf,nome,tipo,posto,sub_om,ordem,upag,valor,prazo,banco,data_nascimento,endereco,numero,complemento,bairro,cidade,uf,cep,fixo1,fixo2,fixo3,cel1,cel2,cel3,identerprise} = req.body;
-                
-                //let identerprise = client.identerprise;
-                newClient = clientUpdate;
-                await Client.update(newClient,{where:{identerprise:identerprise}})
-                res.sendStatus(200);
+              
+               if(clientUpdate.cpf == undefined){
+                clientUpdate.cpf = client.cpf
+
+               }
+                try{
+              
+               await Client.update(clientUpdate,{where:{id:id}})
+             
+                res.sendStatus(201);
+             
+
+              }catch{
+                res.sendStatus(400);
+              }
             }else{
                 res.sendStatus(400)
             }

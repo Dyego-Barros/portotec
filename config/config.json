@@ -1,26 +1,26 @@
-{
-  "development": {
+ {
+   "development": {
     "username": "postgres",
-    "password": "Dyego050291",
-    "database": "portotec",
-    "host": "localhost",
-    "port":"5432",
-    "dialect": "postgres"
-  },
-  "test": {
-    "username": "postgres",
-    "password": "Dyego050291",
-    "database": "portotec",
-    "host": "localhost",
-    "port":"5432",
-    "dialect": "postgres"
-  },
-  "production": {
-    "username": "postgres",
-    "password": "Dyego050291",
-    "database": "portotec",
-    "host": "localhost",
-    "port":"5432",
-    "dialect": "postgres"
-  }
-}
+     "password": "Dyego050291",
+     "database": "portotec",
+     "host": "localhost",
+     "port":"5432",
+     "dialect": "postgres"
+   },
+   "test": {
+     "username": "postgres",
+     "password": "Dyego050291",
+     "database": "portotec",
+     "host": "localhost",
+     "port":"5432",
+     "dialect": "postgres"
+   },
+   "production": {
+     "username": "postgres",
+     "password": "Dyego050291",
+     "database": "portotec",
+     "host": "localhost",
+     "port":"5432",
+     "dialect": "postgres"
+   }
+ }

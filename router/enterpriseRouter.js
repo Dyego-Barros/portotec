@@ -5,24 +5,19 @@ const JWTSecret="123456789abcd";
 
 function auth(req,res,next){
 
-    const authToken = req.headers['authorization'];
-   
+    const authToken = req.headers['authorization'];  
 
     if(authToken != undefined){
-
         const bearer = authToken.split(' ');
         let token = bearer[1];
-
         jwt.verify(token, JWTSecret,(error, data)=>{
             if(error){
                 res.status(401);
             }else{
-                console.log(data);
+                //console.log(data);
                 next();
-
             }
         })
-
     }else{
         res.sendStatus(401);
     }

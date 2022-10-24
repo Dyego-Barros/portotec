@@ -1,6 +1,4 @@
 const DataTypes = require('sequelize');
-const enterprise = require('./enterprise');
-const db = require('./index');
 
 module.exports = function(sequelize, DataTypes) {
   const User = sequelize.define('User',{

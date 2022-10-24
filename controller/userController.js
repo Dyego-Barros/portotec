@@ -3,10 +3,10 @@
 const {sequelize} = require('../models/index');
 const {DataTypes, QueryTypes} = require('sequelize');
 const User = require('../models/user')(sequelize, DataTypes);
-const Enterprise = require('../models/enterprise')(sequelize, DataTypes);
+//const Enterprise = require('../models/enterprise')(sequelize, DataTypes);
 const jwt= require('jsonwebtoken');
-const models = require('../models');
-const { json } = require('body-parser');
+//const models = require('../models');
+//const { json } = require('body-parser');
 
 
 
@@ -41,9 +41,21 @@ module.exports={
         }else{
 
             const id = parseInt(req.params.id);
-            if(id != undefined || id != null){
+            if(id !== undefined || id !== null){
                 const user = await sequelize.query(`SELECT * FROM public."Users" WHERE identerprise=${id}`,{type:QueryTypes.SELECT});
-                res.json(user);
+
+                if(user.length >0){
+                   
+                        res.json(user);
+                        
+                   
+                       
+
+                }else{
+                    res.sendStatus(400);
+                    
+                }
+               
 
 
             }
@@ -169,17 +181,15 @@ module.exports={
         let email = req.body.email_user;
         let password = req.body.password;
           try{
-            if(email !=null && password !=null || email !=undefined && password !=undefined){
+            if(email !==null && password !==null || email !==undefined && password !==undefined){
                 const login = await sequelize.query(`SELECT * FROM public."Users" WHERE email_user='${email}' AND password='${password}'`,{type:QueryTypes.SELECT});
-                if(login !=undefined || login != null){
-                  
+               
+                 if(login.length > 0){                  
                     jwt.sign({id: login.id_user, email: login.email_user}, JWTSecret,{expiresIn:'8h'}, (error, token)=>{
                         if(error){                           
                             res.json({error: "Credenciais invalidas"})
                         }else{                           
                             res.json({token: token, login:login});
-                           
-
                          }
                     });
                    
