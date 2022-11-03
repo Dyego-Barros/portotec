@@ -3,17 +3,17 @@
 module.exports={
   "development": {
     "username": "postgres",
-    "password": "Dyego050291",
+    "password": "@Portotec#2022!@#",
     "database": "portotec",
-    "host": "localhost",
+    "host": "191.101.78.186",
     "port":"5432",
     "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
-    "password": "Dyego050291",
+    "password": "@Portotec#2022!@#",
     "database": "portotec",
-    "host": "localhost",
+    "host": "191.101.78.186",
     "port":"5432",
     "dialect": "postgres"
   },
