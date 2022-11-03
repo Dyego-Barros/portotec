@@ -20,7 +20,9 @@ module.exports= function(sequelize,DataTypes){
   
     email: DataTypes.STRING,
     
-    sip: DataTypes.STRING
+    sip: DataTypes.STRING,
+    
+    apikey:  DataTypes.STRING,
   
    });  
      

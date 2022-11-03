@@ -8,6 +8,7 @@ const jwt= require('jsonwebtoken');
 //const models = require('../models');
 //const { json } = require('body-parser');
 
+const crypto = require('crypto'); 
 
 
 const JWTSecret="123456789abcd";
@@ -64,11 +65,13 @@ module.exports={
     },
     //ROTA DE CRIAÇÂO DE USUARIO
     create: async(req, res)=>{ 
-        let name = req.body.name      
-        const user = {name, cpf, email_user, phone, password, level, identerprise}= req.body
-        if(user!= undefined|| user!= null){ 
+        let name = req.body.name 
+        const passwordHash = req.body.password;
+        const password = crypto.createHash('md5').update(passwordHash).digest('hex');
+        const user = {cpf, email_user, phone,  level, identerprise}= req.body
+        if(user!== undefined || user !== null){ 
                 try{
-                    await sequelize.query(`INSERT INTO public."Users" (name, cpf, email_user, phone, password, level, identerprise) VALUES('${user.name}', '${user.cpf}', '${user.email_user}','${user.phone}','${user.password}','${user.level}',${user.identerprise})`,{type:QueryTypes.INSERT});
+                    await sequelize.query(`INSERT INTO public."Users" (name, cpf, email_user, phone, password, level, identerprise) VALUES('${name}', '${user.cpf}', '${user.email_user}','${user.phone}','${password}','${user.level}',${user.identerprise})`,{type:QueryTypes.INSERT});
                     res.sendStatus(201);
                 }catch(error){
                     if(error.name ===  'SequelizeUniqueConstraintError' ){
@@ -110,7 +113,10 @@ module.exports={
             const user = await sequelize.query(`SELECT * FROM public."Users" WHERE id_user= ${id}`,{type:QueryTypes.SELECT});
             if(user!=undefined){
                 var name = req.body;
+                const crypto = require('crypto');              
+               const passwordHash = req.body.password;
                 const update = {name, cpf,email_user,phone, password, level,identerprise} = req.body;
+                update.password= crypto.createHash('md5').update(passwordHash).digest('hex');
                  if(update.name !=''){
                     user.name= name;
                  }
@@ -176,12 +182,12 @@ module.exports={
         }
     },
 //ROTA DE LOGIN DE USUARIO E AUTORIZAÇÂO DO TOKEN
-    get_user:async(req,res)=>{
-
+    get_user:async(req,res)=>{ 
         let email = req.body.email_user;
-        let password = req.body.password;
+        let passwordHash = req.body.password;
+        let password =crypto.createHash('md5').update(passwordHash).digest('hex');
           try{
-            if(email !==null && password !==null || email !==undefined && password !==undefined){
+            if(email !==undefined && password !==undefined){
                 const login = await sequelize.query(`SELECT * FROM public."Users" WHERE email_user='${email}' AND password='${password}'`,{type:QueryTypes.SELECT});
                
                  if(login.length > 0){                  

@@ -14,12 +14,12 @@ module.exports ={
         const date = new Date().getUTCDate();
         let createdAt =date;
         let updatedAt =date;
-        const enterprise = {cnpj, name_fantasy, social_reason, phone, email} = req.body;
-        const enterprise2 ={cnpj, name_fantasy, social_reason, phone, email, sip, createdAt, updatedAt}
+      
+        const enterprise2 ={cnpj, name_fantasy, social_reason, phone, email, sip, apikey, createdAt, updatedAt}= req.body;
 
         if( enterprise2!= null || enterprise2!=undefined || enterprise2!=''){
             try{
-                await sequelize.query(`INSERT INTO public."Enterprises" (cnpj,name_fantasy,social_reason,phone,email) VALUES('${enterprise2.cnpj}','${enterprise2.name_fantasy}','${enterprise2.social_reason}','${enterprise2.phone}','${enterprise2.email}')`, {type:QueryTypes.INSERT});
+                await sequelize.query(`INSERT INTO public."Enterprises" (cnpj,name_fantasy,social_reason,phone,email,sip,apikey) VALUES('${enterprise2.cnpj}','${enterprise2.name_fantasy}','${enterprise2.social_reason}','${enterprise2.phone}','${enterprise2.email}','${enterprise2.sip}','${enterprise2.apikey}')`, {type:QueryTypes.INSERT});
                 res.sendStatus(201);
 
             }catch(error){
@@ -53,14 +53,11 @@ module.exports ={
              var list_id = await sequelize.query(`SELECT * FROM public."Enterprises" INNER JOIN public."Address_Enterprises" ON id_enterprise=identerprise AND id_enterprise=${id} AND identerprise=${id}`,{type: QueryTypes.SELECT});
 
              if(list_id !=undefined){
-                try {
-                    res.statusCode = 200;
+                try {                    
                     res.json(list_id);
-
                 } catch (error) {
                     res.sendStatus(400);
                 }
-
              }else{
                 res.sendStatus(400);
              }
@@ -103,7 +100,7 @@ module.exports ={
             if(update_enterprise != undefined){
                 const date = new Date().getUTCDate();      
                 let updatedAt =date;
-                const update =  {cnpj, name_fantasy, social_reason, phone, email,sip,updatedAt} = req.body;
+                const update =  {cnpj, name_fantasy, social_reason, phone, email,sip,apikey,updatedAt} = req.body;
                 if(update.cnpj!= ''){
                     update_enterprise.cnpj = cnpj;
                 }

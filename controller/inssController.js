@@ -72,7 +72,7 @@ module.exports = {
             res.sendStatus(401);
         }else{
             let id = parseInt(req.params.id)
-            let get_inss_all = await sequelize.query(`SELECT * FROM public."INSSes" WHERE identerprise=${id}`, {type:QueryTypes.SELECT});
+            let get_inss_all = await sequelize.query(`SELECT * FROM public."INSSes" WHERE identerprise=${id} ORDER BY id ASC`, {type:QueryTypes.SELECT});
             if(get_inss_all !== undefined || get_inss_all!== null){
                 res.json(get_inss_all);
             }

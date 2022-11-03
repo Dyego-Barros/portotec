@@ -4,7 +4,10 @@ module.exports = function (sequelize, DataTypes){
  
   const INSS =sequelize.define('INSS',{
 
-    cpf: DataTypes.STRING,
+    cpf: {
+      type: DataTypes.STRING,
+      unique:false
+    },
     nome: DataTypes.STRING,  
     dtnascimento:DataTypes.STRING,  
      bancopagto:DataTypes.STRING, 

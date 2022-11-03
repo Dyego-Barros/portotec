@@ -52,7 +52,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage})
 //ROTAS DE CRUD EMPRESA
 router.get('/list', auth, enterpriseController.list_all);
-router.get('/list/:id',  auth,enterpriseController.list_id);
+router.get('/list/:id',  auth, enterpriseController.list_id);
 router.post('/create', auth, enterpriseController.create);
 router.delete('/delete/:id',  auth,enterpriseController.delete_enterprise);
 router.put('/update/:id',  auth,enterpriseController.update_enterprise);

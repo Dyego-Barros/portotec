@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
   const Client = sequelize.define('Client',{
     cpf: {
       type: DataTypes.STRING,
-      unique:true
+      unique:false
     },
     nome: DataTypes.STRING,
     tipo: DataTypes.STRING,
