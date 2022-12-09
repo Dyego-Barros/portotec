@@ -3,25 +3,25 @@
 module.exports={
   "development": {
     "username": "postgres",
-    "password": "@Portotec#2022!@#",
+    "password": "@Portotec#2022@#",
     "database": "portotec",
-    "host": "191.101.78.186",
+    "host": "89.116.225.21",
     "port":"5432",
     "dialect": "postgres"
   },
   "test": {
     "username": "postgres",
-    "password": "@Portotec#2022!@#",
+    "password": "@Portotec#2022@#",
     "database": "portotec",
-    "host": "191.101.78.186",
+    "host": "89.116.225.21",
     "port":"5432",
     "dialect": "postgres"
   },
   "production": {
     "username": "postgres",
-    "password": "Dyego050291",
+    "password": "@Portotec#2022@#",
     "database": "portotec",
-    "host": "localhost",
+    "host": "89.116.225.21",
     "port":"5432",
     "dialect": "postgres"
   }

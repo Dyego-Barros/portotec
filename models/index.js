@@ -1,9 +1,4 @@
 'use strict';
-const User = require('../models/user');
-const Enterprise = require('../models/enterprise');
-const Client = require('../models/client');
-const Address_Enterprise = require('../models/address_enterprise');
-const Address_User = require('../models/address_user');
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
